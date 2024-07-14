@@ -1,3 +1,3 @@
-module github.com/dathoangnd/gonet
+module github.com/ruesier/gonet
 
 go 1.13
