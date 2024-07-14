@@ -1,8 +1,4 @@
 # gonet
-[![Documentation](https://godoc.org/github.com/dathoangnd/gonet?status.svg)](https://pkg.go.dev/github.com/dathoangnd/gonet)
-[![Go Report Card](https://goreportcard.com/badge/github.com/dathoangnd/gonet)](https://goreportcard.com/report/github.com/dathoangnd/gonet)
-[![CircleCI](https://circleci.com/gh/dathoangnd/gonet.svg?style=svg)](https://circleci.com/gh/dathoangnd/gonet)
-[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)  
 
 gonet is a Go module implementing multi-layer Neural Network.
 
@@ -15,7 +11,7 @@ go get github.com/dathoangnd/gonet
 Import it in your project:
 
 ```go
-import "github.com/dathoangnd/gonet"
+import "github.com/ruesier/gonet"
 ```
 ## Example
 This example will train a neural network to predict the outputs of XOR logic gates given two binary inputs:
@@ -27,7 +23,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dathoangnd/gonet"
+	"github.com/ruesier/gonet"
 )
 
 func main() {
@@ -69,8 +65,7 @@ func main() {
 	// 1.000000 XOR 0.000000 => 0.943074
 }
 ```
-## Documentation
-See: [https://pkg.go.dev/github.com/dathoangnd/gonet](https://pkg.go.dev/github.com/dathoangnd/gonet)
+
 
 ## License
 
