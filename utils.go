@@ -35,7 +35,7 @@ func linear(x float64) float64 {
 	return x
 }
 
-func dlinear(y float64) float64 {
+func dlinear(_ float64) float64 {
 	return 1
 }
 
