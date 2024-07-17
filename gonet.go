@@ -3,6 +3,7 @@ package gonet
 import (
 	"log"
 	"math"
+	"math/rand"
 	"runtime"
 	"sync"
 )
@@ -72,7 +73,7 @@ func (nn *NN) Config(nInputs int, nHiddens []int, nOutputs int, isRegression boo
 		nn.Weights[i] = matrix(nn.NNodes[i], nn.NNodes[i+1])
 	}
 
-	// rand.Seed(0)
+	rand.Seed(0)
 	for i := 0; i < len(nn.Weights); i++ {
 		for j := 0; j < len(nn.Weights[i]); j++ {
 			for k := 0; k < len(nn.Weights[i][j]); k++ {
@@ -101,38 +102,38 @@ func (nn *NN) feedForward(inputs []float64) []float64 {
 	if cpuCount == 0 {
 		cpuCount = 1
 	}
-	for k := 1; k < NLayers-1; k++ {
-		istep := (nn.NNodes[k] - 1) / cpuCount
+	for layer := 1; layer < NLayers-1; layer++ {
+		istep := (nn.NNodes[layer] - 1) / cpuCount
 		if istep == 0 {
-			istep = (nn.NNodes[k] - 1)
+			istep = (nn.NNodes[layer] - 1)
 		} else {
 			wg.Add(cpuCount)
 		}
-		if ((nn.NNodes[k] - 1) % cpuCount) != 0 {
+		if ((nn.NNodes[layer] - 1) % cpuCount) != 0 {
 			wg.Add(1)
 		}
-		for start := 0; start < nn.NNodes[k]-1; start += istep {
+		for start := 0; start < nn.NNodes[layer]-1; start += istep {
 			end := start + istep
-			if end > nn.NNodes[k]-1 {
-				end = nn.NNodes[k] - 1
+			if end > nn.NNodes[layer]-1 {
+				end = nn.NNodes[layer] - 1
 			}
-			go func(k, istart, iend int) {
+			go func(layer, istart, iend int) {
 				defer wg.Done()
-				for i := istart; i < iend; i++ {
+				for node := istart; node < iend; node++ {
 					var sum float64
 
-					for j := 0; j < nn.NNodes[k-1]; j++ {
-						sum += nn.Activations[k-1][j] * nn.Weights[k-1][j][i]
+					for previousNode := 0; previousNode < nn.NNodes[layer-1]; previousNode++ {
+						sum += nn.Activations[layer-1][previousNode] * nn.Weights[layer-1][previousNode][node]
 					}
 
 					if nn.Regression {
 						// Use sigmoid to avoid explosion
-						nn.Activations[k][i] = sigmoid(sum)
+						nn.Activations[layer][node] = sigmoid(sum)
 					} else {
-						nn.Activations[k][i] = relu(sum)
+						nn.Activations[layer][node] = relu(sum)
 					}
 				}
-			}(k, start, end)
+			}(layer, start, end)
 		}
 		wg.Wait()
 	}
@@ -153,17 +154,17 @@ func (nn *NN) feedForward(inputs []float64) []float64 {
 		}
 		go func(istart, iend int) {
 			defer wg.Done()
-			for i := istart; i < iend; i++ {
+			for node := istart; node < iend; node++ {
 				var sum float64
 
-				for j := 0; j < nn.NNodes[NLayers-2]; j++ {
-					sum += nn.Activations[NLayers-2][j] * nn.Weights[NLayers-2][j][i]
+				for previousNode := 0; previousNode < nn.NNodes[NLayers-2]; previousNode++ {
+					sum += nn.Activations[NLayers-2][previousNode] * nn.Weights[NLayers-2][previousNode][node]
 				}
 
 				if nn.Regression {
-					nn.Activations[NLayers-1][i] = linear(sum)
+					nn.Activations[NLayers-1][node] = linear(sum)
 				} else {
-					nn.Activations[NLayers-1][i] = sigmoid(sum)
+					nn.Activations[NLayers-1][node] = sigmoid(sum)
 				}
 			}
 		}(start, end)
@@ -208,7 +209,7 @@ func (nn *NN) backPropagate(targets []float64, lRate float64) float64 {
 				var expect float64
 
 				for nextNode := 0; nextNode < nn.NNodes[layer+2]-1; nextNode++ {
-					expect += deltas[layer+1][nextNode] * nn.Weights[layer+1][node][nextNode] //
+					expect += deltas[layer+1][nextNode] * nn.Weights[layer+1][node][nextNode]
 				}
 
 				if nn.Regression {

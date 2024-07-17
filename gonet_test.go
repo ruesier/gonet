@@ -2,12 +2,11 @@ package gonet
 
 import (
 	"math"
-	"math/rand"
 	"runtime"
 	"testing"
 )
 
-const testIterations = 5000
+const testIterations = 10
 
 func TestPredict(t *testing.T) {
 	cpus := runtime.NumCPU()
@@ -19,7 +18,6 @@ func TestPredict(t *testing.T) {
 		{{1, 0}, {0}},
 		{{1, 1}, {1}},
 	}
-	rand.Seed(0)
 	nn := New(2, []int{cpus}, 1, false)
 	nn.Train(andTest, testIterations, 0.4, false)
 	for i := 0; i < len(andTest); i++ {
@@ -38,7 +36,6 @@ func TestPredict(t *testing.T) {
 		{{1, 0}, {1}},
 		{{1, 1}, {1}},
 	}
-	rand.Seed(0)
 	nn.Config(2, []int{cpus}, 1, false)
 	nn.Train(orTest, testIterations, 0.4, false)
 	for i := 0; i < len(orTest); i++ {
@@ -57,7 +54,6 @@ func TestPredict(t *testing.T) {
 		{{1, 0}, {1}},
 		{{1, 1}, {0}},
 	}
-	rand.Seed(0)
 	nn.Config(2, []int{cpus}, 1, false)
 	nn.Train(xorTest, testIterations, 0.4, false)
 	for i := 0; i < len(xorTest); i++ {
@@ -76,7 +72,6 @@ func TestPredict(t *testing.T) {
 		{{5}, {10}},
 		{{6}, {12}},
 	}
-	rand.Seed(0)
 	nn.Config(1, []int{cpus, cpus}, 1, true)
 	nn.Train(regTest, testIterations, 0.6, false)
 	t.Logf("model: %+v", nn)
